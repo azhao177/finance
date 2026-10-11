@@ -85,11 +85,12 @@ def main():
     if not (root/'app.py').is_file() or not (root/'ledger.py').is_file():
         raise SystemExit('请先 cd 进入原 finance-main 文件夹，再运行更新；现有文件未修改。')
     # macOS python.org installers may require CA initialization. Reuse pip's verified CA bundle.
+    context=ssl.create_default_context()
     try:
         from pip._vendor import certifi
-        context=ssl.create_default_context(cafile=certifi.where())
+        context.load_verify_locations(cafile=certifi.where())
     except ImportError:
-        context=ssl.create_default_context()
+        pass
     url='https://codeload.github.com/azhao177/finance/zip/refs/heads/main'
     with urllib.request.urlopen(url,context=context,timeout=60) as response:
         raw=response.read(10*1024*1024+1)
