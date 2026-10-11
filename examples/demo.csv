@@ -1,0 +1,18 @@
+transaction_date,posting_date,description,amount,currency,type,status,external_id,original_amount,original_currency,category,subcategory,notes
+2025-12-31,2026-01-02,Fictional year-end bookshop,28.30,CAD,expense,posted,fiction-001,,,学习,书籍,完全虚构
+2026-01-01,2026-01-02,Fictional salary,4200.00,CAD,income,posted,fiction-002,,,待确认,待确认,完全虚构的工资
+2026-01-10,2026-01-11,Fictional green market,86.42,CAD,expense,posted,fiction-003,,,饮食,超市,完全虚构
+2026-01-15,2026-01-16,Fictional shared dinner,12.50,CAD,reimbursement,posted,fiction-004,,,待确认,待确认,分摊收款不算工资
+2026-01-31,2026-02-02,Fictional tea corner,8.75,CAD,expense,posted,fiction-005,,,饮食,咖啡,按交易日期计入一月
+2026-02-01,2026-02-02,Fictional salary,4250.00,CAD,income,posted,fiction-006,,,待确认,待确认,完全虚构
+2026-02-03,2026-02-04,Fictional home payment,1300.00,CAD,expense,posted,fiction-007,,,房子,房贷,仅虚构实际扣款不拆本金利息
+2026-02-06,2026-02-07,Fictional pool membership,65.00,CAD,expense,posted,fiction-008,,,运动,健身会费,完全虚构
+2026-02-10,2026-02-11,Fictional groceries,105.23,CAD,expense,posted,fiction-009,,,饮食,超市,完全虚构
+2026-02-11,2026-02-12,Fictional café,9.20,CAD,expense,posted,fiction-010,,,饮食,咖啡,完全虚构
+2026-02-12,2026-02-13,Fictional online course,49.00,CAD,expense,posted,fiction-011,35.00,USD,学习,课程,虚构账单本币49元不猜汇率
+2026-02-15,2026-02-16,Fictional parking,18.00,CAD,expense,posted,fiction-012,,,车,停车,完全虚构
+2026-02-16,2026-02-17,Fictional purchase refund,24.50,CAD,refund,posted,fiction-013,,,待确认,待确认,退款单列不冲减消费
+2026-02-17,2026-02-18,Fictional ATM,80.00,CAD,withdrawal,posted,fiction-014,,,待确认,待确认,取现单列
+2026-02-20,2026-02-20,Fictional card payment,600.00,CAD,payment,posted,fiction-015,,,待确认,待确认,还款不重复计算信用卡消费
+2026-02-21,2026-02-21,Fictional savings transfer,200.00,CAD,transfer,posted,fiction-016,,,待确认,待确认,内部转账不算收入支出
+2026-02-28,,Fictional pending equipment,35.00,CAD,expense,pending,fiction-017,,,待确认,待确认,未入账单列

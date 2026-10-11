@@ -1,0 +1,415 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-11T15:42:37.947725+00:00",
+  "title": "Design System: 私人账本",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "tonalRamp": [
+          "oklch(15% 0.00248 165.08)",
+          "oklch(26% 0.00248 165.08)",
+          "oklch(38% 0.00248 165.08)",
+          "oklch(49% 0.00248 165.08)",
+          "oklch(61% 0.00248 165.08)",
+          "oklch(72% 0.00248 165.08)",
+          "oklch(84% 0.00248 165.08)",
+          "oklch(95% 0.00248 165.08)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Blue-grey Ink",
+        "tonalRamp": [
+          "oklch(15% 0.03208 224.16)",
+          "oklch(26% 0.03208 224.16)",
+          "oklch(38% 0.03208 224.16)",
+          "oklch(49% 0.03208 224.16)",
+          "oklch(61% 0.03208 224.16)",
+          "oklch(72% 0.03208 224.16)",
+          "oklch(84% 0.03208 224.16)",
+          "oklch(95% 0.03208 224.16)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Supporting Slate",
+        "tonalRamp": [
+          "oklch(15% 0.02981 228.47)",
+          "oklch(26% 0.02981 228.47)",
+          "oklch(38% 0.02981 228.47)",
+          "oklch(49% 0.02981 228.47)",
+          "oklch(61% 0.02981 228.47)",
+          "oklch(72% 0.02981 228.47)",
+          "oklch(84% 0.02981 228.47)",
+          "oklch(95% 0.02981 228.47)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Quiet Divider",
+        "tonalRamp": [
+          "oklch(15% 0.01295 172.34)",
+          "oklch(26% 0.01295 172.34)",
+          "oklch(38% 0.01295 172.34)",
+          "oklch(49% 0.01295 172.34)",
+          "oklch(61% 0.01295 172.34)",
+          "oklch(72% 0.01295 172.34)",
+          "oklch(84% 0.01295 172.34)",
+          "oklch(95% 0.01295 172.34)"
+        ]
+      },
+      "mint": {
+        "role": "primary",
+        "displayName": "Soft Mint",
+        "tonalRamp": [
+          "oklch(15% 0.05386 167.44)",
+          "oklch(26% 0.05386 167.44)",
+          "oklch(38% 0.05386 167.44)",
+          "oklch(49% 0.05386 167.44)",
+          "oklch(61% 0.05386 167.44)",
+          "oklch(72% 0.05386 167.44)",
+          "oklch(84% 0.05386 167.44)",
+          "oklch(95% 0.05386 167.44)"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Ledger Green",
+        "tonalRamp": [
+          "oklch(15% 0.06606 167.62)",
+          "oklch(26% 0.06606 167.62)",
+          "oklch(38% 0.06606 167.62)",
+          "oklch(49% 0.06606 167.62)",
+          "oklch(61% 0.06606 167.62)",
+          "oklch(72% 0.06606 167.62)",
+          "oklch(84% 0.06606 167.62)",
+          "oklch(95% 0.06606 167.62)"
+        ]
+      },
+      "blue": {
+        "role": "secondary",
+        "displayName": "Powder Blue",
+        "tonalRamp": [
+          "oklch(15% 0.04216 251.66)",
+          "oklch(26% 0.04216 251.66)",
+          "oklch(38% 0.04216 251.66)",
+          "oklch(49% 0.04216 251.66)",
+          "oklch(61% 0.04216 251.66)",
+          "oklch(72% 0.04216 251.66)",
+          "oklch(84% 0.04216 251.66)",
+          "oklch(95% 0.04216 251.66)"
+        ]
+      },
+      "peach": {
+        "role": "secondary",
+        "displayName": "Soft Peach",
+        "tonalRamp": [
+          "oklch(15% 0.05235 46.86)",
+          "oklch(26% 0.05235 46.86)",
+          "oklch(38% 0.05235 46.86)",
+          "oklch(49% 0.05235 46.86)",
+          "oklch(61% 0.05235 46.86)",
+          "oklch(72% 0.05235 46.86)",
+          "oklch(84% 0.05235 46.86)",
+          "oklch(95% 0.05235 46.86)"
+        ]
+      },
+      "pink": {
+        "role": "tertiary",
+        "displayName": "Dusty Pink",
+        "tonalRamp": [
+          "oklch(15% 0.06226 346.42)",
+          "oklch(26% 0.06226 346.42)",
+          "oklch(38% 0.06226 346.42)",
+          "oklch(49% 0.06226 346.42)",
+          "oklch(61% 0.06226 346.42)",
+          "oklch(72% 0.06226 346.42)",
+          "oklch(84% 0.06226 346.42)",
+          "oklch(95% 0.06226 346.42)"
+        ]
+      },
+      "purple": {
+        "role": "tertiary",
+        "displayName": "Soft Lavender",
+        "tonalRamp": [
+          "oklch(15% 0.05811 298.51)",
+          "oklch(26% 0.05811 298.51)",
+          "oklch(38% 0.05811 298.51)",
+          "oklch(49% 0.05811 298.51)",
+          "oklch(61% 0.05811 298.51)",
+          "oklch(72% 0.05811 298.51)",
+          "oklch(84% 0.05811 298.51)",
+          "oklch(95% 0.05811 298.51)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White Surface",
+        "tonalRamp": [
+          "oklch(15% 0.00000 89.88)",
+          "oklch(26% 0.00000 89.88)",
+          "oklch(38% 0.00000 89.88)",
+          "oklch(49% 0.00000 89.88)",
+          "oklch(61% 0.00000 89.88)",
+          "oklch(72% 0.00000 89.88)",
+          "oklch(84% 0.00000 89.88)",
+          "oklch(95% 0.00000 89.88)"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "Focus Blue",
+        "tonalRamp": [
+          "oklch(15% 0.09397 236.28)",
+          "oklch(26% 0.09397 236.28)",
+          "oklch(38% 0.09397 236.28)",
+          "oklch(49% 0.09397 236.28)",
+          "oklch(61% 0.09397 236.28)",
+          "oklch(72% 0.09397 236.28)",
+          "oklch(84% 0.09397 236.28)",
+          "oklch(95% 0.09397 236.28)"
+        ]
+      },
+      "error": {
+        "role": "neutral",
+        "displayName": "Error Red",
+        "tonalRamp": [
+          "oklch(15% 0.11520 22.38)",
+          "oklch(26% 0.11520 22.38)",
+          "oklch(38% 0.11520 22.38)",
+          "oklch(49% 0.11520 22.38)",
+          "oklch(61% 0.11520 22.38)",
+          "oklch(72% 0.11520 22.38)",
+          "oklch(84% 0.11520 22.38)",
+          "oklch(95% 0.11520 22.38)"
+        ]
+      },
+      "hover-wash": {
+        "role": "neutral",
+        "displayName": "Hover Wash",
+        "tonalRamp": [
+          "oklch(15% 0.00998 164.87)",
+          "oklch(26% 0.00998 164.87)",
+          "oklch(38% 0.00998 164.87)",
+          "oklch(49% 0.00998 164.87)",
+          "oklch(61% 0.00998 164.87)",
+          "oklch(72% 0.00998 164.87)",
+          "oklch(84% 0.00998 164.87)",
+          "oklch(95% 0.00998 164.87)"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Primary Hover",
+        "tonalRamp": [
+          "oklch(15% 0.05722 167.12)",
+          "oklch(26% 0.05722 167.12)",
+          "oklch(38% 0.05722 167.12)",
+          "oklch(49% 0.05722 167.12)",
+          "oklch(61% 0.05722 167.12)",
+          "oklch(72% 0.05722 167.12)",
+          "oklch(84% 0.05722 167.12)",
+          "oklch(95% 0.05722 167.12)"
+        ]
+      },
+      "tabs-wash": {
+        "role": "neutral",
+        "displayName": "Tabs Wash",
+        "tonalRamp": [
+          "oklch(15% 0.00912 161.35)",
+          "oklch(26% 0.00912 161.35)",
+          "oklch(38% 0.00912 161.35)",
+          "oklch(49% 0.00912 161.35)",
+          "oklch(61% 0.00912 161.35)",
+          "oklch(72% 0.00912 161.35)",
+          "oklch(84% 0.00912 161.35)",
+          "oklch(95% 0.00912 161.35)"
+        ]
+      },
+      "field-border": {
+        "role": "neutral",
+        "displayName": "Field Border",
+        "tonalRamp": [
+          "oklch(15% 0.02610 164.23)",
+          "oklch(26% 0.02610 164.23)",
+          "oklch(38% 0.02610 164.23)",
+          "oklch(49% 0.02610 164.23)",
+          "oklch(61% 0.02610 164.23)",
+          "oklch(72% 0.02610 164.23)",
+          "oklch(84% 0.02610 164.23)",
+          "oklch(95% 0.02610 164.23)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Financial values with tabular numerals."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Compact application identity."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section and dialog headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Readable ledger and form content."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Persistent field labels."
+      },
+      "supporting": {
+        "displayName": "Supporting",
+        "purpose": "Metadata, percentages and explanations."
+      }
+    },
+    "shadows": [
+      {
+        "name": "active-range",
+        "value": "0 2px 6px #354c5510",
+        "purpose": "Small lift for the selected range button."
+      },
+      {
+        "name": "dialog",
+        "value": "0 15px 60px #354c5525",
+        "purpose": "Structural separation for modal forms."
+      }
+    ],
+    "motion": [
+      {
+        "name": "button-state",
+        "value": "background-color .16s ease-out, border-color .16s ease-out",
+        "purpose": "Button state transition only when reduced motion is not requested."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none; transition: none; scroll-behavior: auto",
+        "purpose": "Respect the system reduced-motion preference."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "stack",
+        "value": "760px"
+      },
+      {
+        "name": "narrow-metrics",
+        "value": "360px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Import and save actions.",
+      "html": "<button class=\"ds-primary\">导入账单</button>",
+      "css": ".ds-primary{border:1px solid var(--line);border-radius:8px;padding:9px 16px;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;background:var(--primary);color:var(--surface);border-color:var(--primary)}.ds-primary:hover{background:#1c4939}.ds-primary:active{background:#1c4939}.ds-primary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}.ds-primary:disabled{opacity:.55;cursor:wait}@media(prefers-reduced-motion:no-preference){.ds-primary{transition:background-color .16s ease-out,border-color .16s ease-out}}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quiet account and correction actions.",
+      "html": "<button class=\"ds-secondary\">账户与分类</button>",
+      "css": ".ds-secondary{border:1px solid var(--line);border-radius:8px;padding:9px 16px;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;background:var(--surface);color:var(--ink)}.ds-secondary:hover{background:#edf5f1;border-color:#91aea0}.ds-secondary:active{background:#ddece4}.ds-secondary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Labeled Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Persistent label with a readable form boundary.",
+      "html": "<label class=\"ds-label\">账户名称<input class=\"ds-input\" placeholder=\"例如：我的信用卡 A\"></label>",
+      "css": ".ds-label{display:block;font-weight:600;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;font-size:.875rem;color:var(--ink)}.ds-input{display:block;margin-top:5px;min-height:44px;width:100%;min-width:0;background:var(--surface);color:var(--ink);border:1px solid #a7bbb1;border-radius:6px;padding:8px 10px;caret-color:var(--primary);font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;}.ds-input::placeholder{color:var(--muted)}.ds-input:hover{border-color:#91aea0}.ds-input:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Range Navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Compact monthly/annual range choice.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"报表范围\"><button aria-pressed=\"true\">月度</button><button aria-pressed=\"false\">年度</button></nav>",
+      "css": ".ds-tabs{display:inline-flex;gap:4px;background:#eaf1ed;padding:4px;border-radius:9px}.ds-tabs button{border:1px solid var(--line);border-radius:8px;padding:9px 16px;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;min-width:80px;border:0;background:transparent;color:var(--ink)}.ds-tabs button[aria-pressed=\"true\"]{background:var(--surface);box-shadow:0 2px 6px #354c5510}.ds-tabs button:hover{background:#edf5f1}.ds-tabs button:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Separate Type Chip",
+      "kind": "chip",
+      "refersTo": "special-chip",
+      "description": "A separately reported amount that opens its records.",
+      "html": "<button class=\"ds-chip\"><span>退款</span><strong>CA$0.00</strong></button>",
+      "css": ".ds-chip{border:1px solid var(--line);border-radius:8px;padding:9px 16px;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;font-size:.875rem;background:var(--surface);color:var(--ink)}.ds-chip strong{font-variant-numeric:tabular-nums}.ds-chip:hover{background:#edf5f1;border-color:#91aea0}.ds-chip:active{background:#ddece4}.ds-chip:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Financial Overview",
+      "kind": "card",
+      "refersTo": "overview",
+      "description": "Quiet bounded container for traceable financial values.",
+      "html": "<section class=\"ds-overview\"><h2>月度账目</h2><span>消费支出</span><strong>CA$0.00</strong><p>仅已入账消费；其他类型另列。</p></section>",
+      "css": ".ds-overview{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:22px 28px;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;}.ds-overview h2{font-size:1.15rem;font-weight:650;margin:0}.ds-overview span{display:block;margin-top:25px;color:var(--muted);font-size:.9rem}.ds-overview strong{display:block;font-size:clamp(1.25rem,2.6vw,2.2rem);font-weight:600;font-variant-numeric:tabular-nums}.ds-overview p{font-size:.875rem;color:var(--muted);margin:22px 0 0}@media(max-width:760px){.ds-overview{padding:18px}}"
+    },
+    {
+      "name": "Category Row",
+      "kind": "custom",
+      "refersTo": "category-row",
+      "description": "Complete category label, amount and share alongside the chart.",
+      "html": "<button class=\"ds-category\"><span class=\"ds-swatch\" aria-hidden=\"true\"></span><span>示例分类</span><strong>CA$0.00</strong><span class=\"ds-pct\">0.0%</span></button>",
+      "css": ".ds-category{display:grid;grid-template-columns:14px minmax(0,1fr) auto 60px;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);min-height:54px;padding:12px 4px;cursor:pointer;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;}.ds-swatch{width:12px;height:12px;border-radius:3px;background:var(--mint);border:1px solid #354c5533}.ds-category strong{font-weight:500;font-variant-numeric:tabular-nums}.ds-pct{text-align:right;color:var(--muted);font-size:.875rem}.ds-category:hover{background:#eff6f2}.ds-category:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Transaction Row",
+      "kind": "custom",
+      "refersTo": "transaction-row",
+      "description": "Clickable record with aligned date, description and amount.",
+      "html": "<button class=\"ds-transaction\"><span class=\"ds-date\">2026-01-01</span><div><span class=\"ds-description\">虚构示例记录</span><small>示例账户 · 示例分类</small></div><span class=\"ds-amount\">CA$0.00</span></button>",
+      "css": ".ds-transaction{display:grid;grid-template-columns:100px minmax(0,1fr) 120px;align-items:center;gap:18px;min-height:76px;border:0;border-bottom:1px solid var(--line);width:100%;text-align:left;border-radius:0;background:transparent;padding:14px 4px;color:var(--ink);cursor:pointer;font-family:\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif;font-size:16px;line-height:1.6;}.ds-date{font-size:.875rem}.ds-description{font-weight:550;overflow-wrap:anywhere}.ds-transaction small{display:block;font-size:.8rem;color:var(--muted)}.ds-amount{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.ds-transaction:hover{background:#edf5f1;border-color:#91aea0}.ds-transaction:focus-visible{outline:3px solid var(--focus);outline-offset:3px}@media(max-width:760px){.ds-transaction{grid-template-columns:minmax(0,1fr) 110px;gap:8px}.ds-date{grid-column:1/-1}.ds-amount{grid-column:2;grid-row:2;align-self:start}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Personal Ledger",
+    "overview": "The personal ledger uses cool paper, dark ink and restrained pastel category marks. Familiar labeled controls and aligned amounts make checking a private record feel calm and direct. Financial values remain the visual subject; the interface supports tracing them to individual records.\n\nThis is a form-led, single-owner web application. White containers and fine dividers organize useful density; color identifies categories and interaction without turning the page into a promotional surface. The same standard Chinese sans stack serves headings, labels and numbers, with no external font requests.",
+    "keyCharacteristics": [
+      "Cool paper and dark ink with soft category colors.",
+      "Direct labeled controls and visible keyboard focus.",
+      "Aligned tabular amounts with readable supporting context.",
+      "Flat sections, lightly bounded containers and scrollable dialogs.",
+      "Desktop paired chart/list and mobile stacked content."
+    ],
+    "rules": [
+      {
+        "name": "The Ink Rule",
+        "body": "Keep readable labels and amounts in dark ink; use pastel fills for category identity rather than body text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Local Type Rule",
+        "body": "Use the installed Chinese sans stack and tabular numerals for amounts; do not fetch external fonts.",
+        "section": "typography"
+      },
+      {
+        "name": "The Quiet Depth Rule",
+        "body": "Use borders and tonal surfaces for ordinary content; reserve structural elevation for modal dialogs and the active range tab.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve the cool paper, dark ink and confirmed pastel palette.",
+      "Do provide explicit labels, visible keyboard focus and at least 44px control targets.",
+      "Do keep amounts aligned and use tabular numerals.",
+      "Do stack paired content and forms on narrow screens, and let dialogs scroll within the viewport.",
+      "Do show missing coverage and source context as readable information."
+    ],
+    "donts": [
+      "Don't introduce external font calls or decorative display typography.",
+      "Don't use pale category colors for essential text.",
+      "Don't replace the direct ledger controls with a marketing hero.",
+      "Don't make missing records look like confirmed zero spending.",
+      "Don't add heavy shadows, gradients or motion to ordinary ledger sections."
+    ]
+  }
+}
