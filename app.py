@@ -208,6 +208,14 @@ def create_app(data_dir=None, testing=False):
         if not file:
             raise ValueError('请选择文件')
         account_id=request.form.get('account_id')
+        mapping_text=request.form.get('mapping','')
+        try:
+            mapping=json.loads(mapping_text) if mapping_text else None
+        except (ValueError,TypeError):
+            raise ValueError('列映射设置不合法，请重新选择') from None
+        if mapping is not None and not isinstance(mapping,dict):
+            raise ValueError('列映射设置不合法')
+        delimiter=request.form.get('delimiter','auto')
         with db() as conn:
             account=conn.execute('SELECT * FROM accounts WHERE id=?',(account_id,)).fetchone()
             if not account:
@@ -219,7 +227,13 @@ def create_app(data_dir=None, testing=False):
             prior=conn.execute('SELECT id FROM files WHERE account_id=? AND digest=?',(account_id,digest)).fetchone()
             if prior:
                 return jsonify(duplicate_file=True,rows=[],file_id=prior['id'])
-            rows=ledger.preview(conn,raw,ext,account)
+            if request.form.get('inspect')=='1':
+                headers,_=ledger.read_table(raw,ext,delimiter)
+                return jsonify(mapping_required=True,headers=headers,aliases=ledger.HEADER_ALIASES)
+            try:
+                rows=ledger.preview(conn,raw,ext,account,mapping,delimiter)
+            except ledger.MappingRequired as error:
+                return jsonify(mapping_required=True,headers=error.headers,aliases=ledger.HEADER_ALIASES)
         start=ledger.iso(request.form.get('coverage_start'),False)
         end=ledger.iso(request.form.get('coverage_end'),False)
         if bool(start)!=bool(end) or (start and start>end):
@@ -227,7 +241,7 @@ def create_app(data_dir=None, testing=False):
         token=str(uuid.uuid4())
         (data/'staging'/f'{token}.bin').write_bytes(raw)
         metadata=dict(account_id=account_id,name=filename,ext=ext,digest=digest,coverage_start=start,coverage_end=end,
-                      created=time.time(),session_token=session['token'])
+                      created=time.time(),session_token=session['token'],mapping=mapping,delimiter=delimiter)
         (data/'staging'/f'{token}.json').write_text(json.dumps(metadata))
         return jsonify(token=token,rows=rows,summary=ledger.summarize(rows),warning='相同日期、原始描述、金额且无银行 ID 的交易按出现次数匹配；重叠文件不能区分巧合的同额消费，请逐行核对。')
 
@@ -251,7 +265,7 @@ def create_app(data_dir=None, testing=False):
                 return jsonify(added=0,updated=0,duplicates=0,duplicate_file=True)
             account=conn.execute('SELECT * FROM accounts WHERE id=?',(metadata['account_id'],)).fetchone()
             raw=(data/'staging'/f'{token}.bin').read_bytes()
-            rows=ledger.preview(conn,raw,metadata['ext'],account)
+            rows=ledger.preview(conn,raw,metadata['ext'],account,metadata.get('mapping'),metadata.get('delimiter','auto'))
             fid=str(uuid.uuid4())
             conn.execute('INSERT INTO files VALUES(?,?,?,?,?,?,?)',
                          (fid,account['id'],metadata['digest'],metadata['name'],metadata['ext'],metadata['coverage_start'],metadata['coverage_end']))

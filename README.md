@@ -17,6 +17,19 @@ python3.12 -m venv .venv
 
 密码至少 12 字符，输入时不会显示。保持终端开着，在这台 Mac 的浏览器打开 `http://127.0.0.1:8000`。停止按 Control+C。以后进入同一个文件夹，只执行最后一条启动命令；不要重新初始化密码或删除 `.runtime`。账目不会上传到 GitHub。
 
+## Mac 更新已有版本
+
+先在运行服务的终端按 Control+C。在**原来的**项目文件夹执行以下命令，不要删除文件夹或重新运行 `init`：
+
+```bash
+cd /Users/andrea/Downloads/finance-main
+curl -fsSL https://raw.githubusercontent.com/azhao177/finance/main/scripts/update_code.py -o /tmp/finance-update.py
+.venv/bin/python /tmp/finance-update.py
+.venv/bin/python app.py serve --host 127.0.0.1 --port 8000
+```
+
+如果你的文件夹路径不同，第一行改为实际路径。更新程序只从本仓库下载并替换允许的代码和文档，先备份旧代码；保留 `.runtime` 中的数据库、原件、密码和 `.venv`，不上传账目。更新后刷新浏览器。
+
 ## 启动
 
 要求 Python 3.12（当前环境已安装依赖）。在你自己的电脑或服务器：
@@ -47,15 +60,17 @@ python -m venv .venv
 
 ## 导入格式
 
-CSV：UTF-8，可含 BOM。Excel：`.xlsx`、一个 sheet、首行为列名；金额和日期不能是公式。旧 `.xls` 先在本机另存 `.xlsx`。以下列名大小写固定：
+CSV：UTF-8，可含 BOM，支持逗号、Tab、分号分隔；只识别分隔结构，不猜交易含义。Excel：`.xlsx`、一个 sheet、首行为列名；金额和日期不能是公式。旧 `.xls` 先在本机另存 `.xlsx`。标准列名大小写固定，另外直接兼容 `post_date` → `posting_date`、`details` → `description`。
+
+其他列名可在导入窗口点击「设置列映射／日期格式」。只读取列标题供选择，不改写原始文件。交易日期、描述、金额必须映射；入账日期可缺失，本币可采用已设置的账户币种。日期格式由本人明确选择，不自动猜日／月顺序；带正负号的金额须明确选择正、负对应的类型。银行 `DEBIT`、`CREDIT` 等未知类型不会自动变成消费或收入，预览中逐行确认或跳过后才可入账。
 
 | 列 | 规则 |
 |---|---|
 | transaction_date | 必填真实交易日期，`YYYY-MM-DD`，无完整年份就拒绝，不用入账日期补猜 |
-| posting_date | 银行入账日期，允许空值，表头仍需存在 |
-| description | 原始商户／银行描述；不推断用途 |
+| posting_date | 银行入账日期，允许缺列或空值；别名 `post_date` |
+| description | 原始商户／银行描述；别名 `details`，不推断用途 |
 | amount | 账单本币正数，最多两位小数，不带 `$` 或千分位逗号 |
-| currency | 与账户本币相同，如 CAD；表头须存在，空值采用已明确设置的账户币种 |
+| currency | 与账户本币相同，如 CAD；缺列或空值采用已明确设置的账户币种 |
 | type | 明确填写下表之一；不能直接根据金额正负或商户推测 |
 | status | `posted` 或 `pending`；空值表示明确导入已入账记录 |
 | external_id | 银行提供的稳定交易 ID（可选；不是账单行号） |

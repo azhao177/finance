@@ -1,7 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const csrf = document.querySelector('meta[name="csrf-token"]').content;
-let data = null, mode = 'monthly', activeCategory = '', activeSub = '', activeKind = '', staged = null;
+let data = null, mode = 'monthly', activeCategory = '', activeSub = '', activeKind = '', staged = null, mappingControls = null;
 const money = cents => new Intl.NumberFormat('zh-CN', {style:'currency',currency:$('currency').value || 'CAD'}).format(cents/100);
 const el = (tag, text, cls) => {const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 const notice = message => {$('notice').textContent=message;};
@@ -128,7 +128,7 @@ function categoryFields(category,subcategory){
   const wrapper=el('div',undefined,'two-col'),catLabel=el('label','大类'),subLabel=el('label','二级分类'),cat=el('select'),sub=el('select');cat.name='category';sub.name='subcategory';
   options(cat,data.categories.map(c=>[c.name,c.name]),category);const fill=()=>options(sub,(data.categories.find(c=>c.name===cat.value)?.children||[]).map(c=>[c,c]),subcategory);fill();cat.addEventListener('change',fill);catLabel.append(cat);subLabel.append(sub);wrapper.append(catLabel,subLabel);return {wrapper,cat,sub};
 }
-function typeSelect(type){const label=el('label','交易类型'),select=el('select');select.name='type';options(select,Object.entries(data.types),type);label.append(select);return {label,select};}
+function typeSelect(type){const label=el('label','交易类型'),select=el('select');select.name='type';options(select,type==='unconfirmed'?[['unconfirmed','待确认：请选择明确类型'],...Object.entries(data.types)]:Object.entries(data.types),type);label.append(select);return {label,select};}
 function openDetail(t){
   const content=$('detail-content');content.replaceChildren();const dl=el('dl');
   for(const [name,value] of [['稳定 ID',t.id],['交易日期',t.transaction_date],['入账日期',t.posting_date||'未提供'],['账户',t.account],['原始描述',t.description],['账单本币',`${t.currency} ${(t.amount/100).toFixed(2)}`],['原币',t.original_currency?`${t.original_currency} ${(t.original_amount/100).toFixed(2)}`:'未提供'],['状态',t.status],['分类来源',t.manual?'手工修改（优先保留）':'导入／规则']])dl.append(el('dt',name),el('dd',value));content.append(dl);
@@ -144,13 +144,55 @@ function renderSettings(){
   $('rules-list').replaceChildren();for(const r of data.rules){const p=el('div',undefined,'compact-list');p.append(el('p',`${r.description} → ${r.category} / ${r.subcategory} · ${data.types[r.type]}`));const b=el('button','删除未来规则');b.addEventListener('click',async()=>{try{await api('/api/rules/'+r.id,{method:'DELETE'});await reload();}catch(e){$('settings-error').textContent=e.message;}});p.append(b);$('rules-list').append(p);}if(!data.rules.length)$('rules-list').append(el('p','尚无自动规则。','muted'));
 }
 for(const [formId,path] of [['account-form','/api/accounts'],['category-form','/api/categories']])$(formId).addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;try{await api(path,{method:'POST',body:Object.fromEntries(new FormData(e.target))});e.target.reset();if(formId==='account-form')e.target.currency.value='CAD';await reload();$('settings-error').textContent='已保存';}catch(e){$('settings-error').textContent=e.message;}finally{b.disabled=false;}});
-$('import-form').addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');b.disabled=true;$('import-error').textContent='';$('import-preview').hidden=true;try{staged=await api('/api/import/preview',{method:'POST',body:new FormData(e.target)});if(staged.duplicate_file){$('import-error').textContent='该账户已导入完全相同文件，没有增加交易。';return;}renderPreview();}catch(e){$('import-error').textContent=e.message;}finally{b.disabled=false;}});
+function renderMapping(headers, aliases={}) {
+  const box=$('import-mapping');box.hidden=false;box.replaceChildren();mappingControls={columns:{}};
+  box.append(el('h3','选择文件各列的含义'),el('p','只映射列含义，不修改原文件。未知收支类型会要求逐笔确认；不会根据商户名称或金额符号自行分类。','muted'));
+  if(headers.length===1)box.append(el('p','只读到一列：请检查 CSV 分隔符，选择逗号、Tab 或分号后重新读取标题。','error'));
+  const labels={transaction_date:'交易日期（必选）',posting_date:'入账日期（缺失可留空）',description:'原始描述（必选）',amount:'账单本币金额（必选）',currency:'本币（留空使用账户币种）',type:'交易类型列（可逐笔确认）',status:'状态列（posted／pending）',external_id:'银行稳定交易 ID',original_amount:'原币金额',original_currency:'原币币种',category:'大类',subcategory:'二级分类',notes:'备注'};
+  const required=['transaction_date','description','amount'];
+  const grid=el('div',undefined,'two-col');
+  for(const [key,title] of Object.entries(labels)){
+    const label=el('label',title),select=el('select');select.id='map-'+key;select.name='map-'+key;select.required=required.includes(key);
+    const selected=headers.find(h=>(aliases[h]||h)===key)||'';
+    options(select,[['',required.includes(key)?'请选择来源列':'未提供／不使用此列'],...headers.map(h=>[h,h])],selected);label.append(select);grid.append(label);mappingControls.columns[key]=select;
+  }
+  box.append(grid);
+  function setting(key,title,entries,selected){const label=el('label',title),select=el('select');select.id='map-'+key;options(select,entries,selected);label.append(select);box.append(label);mappingControls[key]=select;}
+  setting('date_format','日期格式（请按原文件确认，不猜月／日）',[['iso','YYYY-MM-DD'],['ymd_slash','YYYY/MM/DD'],['mdy','MM/DD/YYYY（月／日／年）'],['dmy','DD/MM/YYYY（日／月／年）']],'iso');
+  setting('amount_mode','金额方向模式',[['positive','全部为正数，方向由类型确定'],['signed','正负金额：保留原件，将绝对金额入账']],'positive');
+  const kinds=[['unconfirmed','逐笔确认，不自动判断'],...Object.entries(data.types)];
+  setting('type_default','没有选择类型列时，统一类型（混合账单请逐笔确认）',kinds,'unconfirmed');
+  const directions=el('div',undefined,'two-col');
+  for(const [key,title] of [['positive_type','正数表示'],['negative_type','负数表示']]){const label=el('label',title),select=el('select');select.id='map-'+key;options(select,kinds,'unconfirmed');label.append(select);directions.append(label);mappingControls[key]=select;}
+  box.append(directions,el('p','明确类型列优先于正负号规则。银行的正负惯例不同；还款、退款、转账不能都当消费。日期须含四位年份，金额须为不含货币符号和千分位的数字。','muted'));
+  mappingControls.amount_mode.addEventListener('change',()=>directions.hidden=mappingControls.amount_mode.value!=='signed');directions.hidden=true;
+  box.append(el('p','选好后点击下方「解析并预览」，核对每笔记录，再确认入账。','muted'));
+}
+function importPayload(inspect=false){
+  const body=new FormData($('import-form'));
+  if(inspect)body.set('inspect','1');
+  else if(mappingControls){const mapping={columns:Object.fromEntries(Object.entries(mappingControls.columns).map(([k,s])=>[k,s.value]))};for(const key of ['date_format','amount_mode','type_default','positive_type','negative_type'])mapping[key]=mappingControls[key].value;body.set('mapping',JSON.stringify(mapping));}
+  return body;
+}
+async function parseImport(inspect=false){
+  const form=$('import-form'),button=inspect?$('inspect-columns'):form.querySelector('button[type=submit]');button.disabled=true;$('import-error').textContent='';$('import-preview').hidden=true;staged=null;
+  try{
+    const result=await api('/api/import/preview',{method:'POST',body:importPayload(inspect)});
+    if(result.duplicate_file){$('import-error').textContent='该账户已导入完全相同文件，没有增加交易。';return;}
+    if(result.mapping_required){renderMapping(result.headers,result.aliases);return;}
+    staged=result;renderPreview();
+  }catch(e){$('import-error').textContent=e.message;}finally{button.disabled=false;}
+}
+$('import-form').addEventListener('submit',e=>{e.preventDefault();parseImport();});
+$('inspect-columns').addEventListener('click',()=>parseImport(true));
+$('import-form').addEventListener('change',e=>{staged=null;$('import-preview').hidden=true;if(e.target.type==='file'||e.target.id==='csv-delimiter'){mappingControls=null;$('import-mapping').hidden=true;$('import-mapping').replaceChildren();}});
 function renderPreview(){
   const target=$('import-preview');target.hidden=false;target.replaceChildren();const summary=staged.summary.totals;
-  target.append(el('h3',`${staged.rows.length} 笔 · 待核对`),el('p',`文件原始行合计（含重复行，非入账增量）：收入 ${money(summary.income)}；消费 ${money(summary.expense)}；pending ${money(summary.pending)}。`),el('p',staged.warning,'muted'));
+  target.append(el('h3',`${staged.rows.length} 笔 · 待核对`),el('p',`仅已确认类型的文件行小计（含重复，非入账增量）：收入 ${money(summary.income)}；消费 ${money(summary.expense)}；pending ${money(summary.pending)}。${summary.unconfirmed||0} 笔类型待确认，未计入上述小计。`),el('p',staged.warning,'muted'));
   const form=el('form'),controls=[];
   staged.rows.forEach((r,i)=>{const panel=el('div',undefined,'preview-row');const titles={new:'新增',duplicate:'重复：保留原 ID 与手工修改',update:'临时 → 正式：保留原 ID',review:'银行 ID 信息变化：须确认'};
     panel.append(el('p',`${r.transaction_date} · ${r.description} · ${r.currency} ${(r.amount/100).toFixed(2)}`),el('p',`${titles[r.action]} · ${r.status} · ${r.page?'页 '+r.page+' · ':''}行 ${r.line}`,'muted'));
+    if(r.type==='unconfirmed')panel.append(el('p',`原文件类型：${r.original_type||'未提供'}。必须选择明确类型或跳过，不能直接入账。`,'error'));
     const fields=categoryFields(r.category,r.subcategory),type=typeSelect(r.type);panel.append(type.label,fields.wrapper);
     const skipLabel=el('label',undefined,'checkbox'),skip=el('input');skip.type='checkbox';skipLabel.append(skip,el('span','跳过此行'));panel.append(skipLabel);
     let match=null,confirm=null;

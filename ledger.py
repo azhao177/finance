@@ -30,6 +30,13 @@ COLORS = ['#aedbc8', '#bed4ed', '#f3cbb8', '#e8b9d1', '#cbbfe8', '#b7ddd9',
           '#d9ddb7', '#c8d7e5', '#edd4bd', '#d9c6db', '#c5d6bd', '#d7cfeb', '#d3dce0']
 HEADERS = ['transaction_date', 'posting_date', 'description', 'amount', 'currency', 'type',
            'status', 'external_id', 'original_amount', 'original_currency', 'category', 'subcategory', 'notes']
+HEADER_ALIASES = {'post_date': 'posting_date', 'details': 'description'}
+
+
+class MappingRequired(ValueError):
+    def __init__(self, headers):
+        super().__init__('请选择 CSV／Excel 各列的含义')
+        self.headers = headers
 
 
 def connect(path):
@@ -133,32 +140,112 @@ def fingerprint(row):
                                      ensure_ascii=False).encode()).hexdigest()
 
 
-def parse_file(data, ext):
-    """Only explicit canonical columns; unknown PDF layouts fail closed."""
+def read_table(data, ext, delimiter='auto'):
+    """Read structural columns locally; never infer date or financial direction."""
     if ext == '.csv':
         content = data.decode('utf-8-sig')
-        reader = csv.DictReader(io.StringIO(content))
-        if not reader.fieldnames or not set(HEADERS[:6]).issubset(reader.fieldnames):
-            raise ValueError('CSV 缺少标准列，请按导入说明映射列名')
-        return [(r, reader.line_num, None) for r in reader]
-    if ext == '.xlsx':
-        wb = load_workbook(io.BytesIO(data), read_only=True, data_only=False)
+        if delimiter not in ('auto', ',', ';', '\t'):
+            raise ValueError('分隔符只支持逗号、分号或 Tab')
+        if delimiter == 'auto':
+            try:
+                delimiter = csv.Sniffer().sniff(content[:8192], delimiters=',;\t').delimiter
+            except csv.Error:
+                delimiter = ','
+        reader = csv.reader(io.StringIO(content), delimiter=delimiter)
+        headers = next(reader, [])
         rows = []
-        # One sheet per upload: avoids silently omitting unknown worksheets.
+        for values in reader:
+            if not values or all(not str(v).strip() for v in values):
+                continue
+            if len(values) != len(headers):
+                raise ValueError(f'第 {reader.line_num} 行列数与标题不一致；请检查分隔符或引号')
+            rows.append((values, reader.line_num))
+            if len(rows) > 20000:
+                raise ValueError('单文件最多 20,000 笔，请拆分文件')
+    elif ext == '.xlsx':
+        wb = load_workbook(io.BytesIO(data), read_only=True, data_only=False)
         if len(wb.worksheets) != 1:
             raise ValueError('导入 Excel 须只有一个交易 sheet；年度导出是报表，不直接回导')
-        ws = wb.worksheets[0]
-        iterator = ws.iter_rows(values_only=True)
+        iterator = wb.worksheets[0].iter_rows(values_only=True)
         headers = list(next(iterator, ()))
-        if not set(HEADERS[:6]).issubset(headers):
-            raise ValueError('Excel 缺少标准列')
+        rows = []
         for i, values in enumerate(iterator, 2):
             if all(v is None for v in values):
                 continue
             if any(isinstance(v, str) and v.startswith('=') for v in values):
                 raise ValueError(f'第 {i} 行含公式；请导入已经核对的数值')
-            rows.append((dict(zip(headers, values)), i, None))
-        return rows
+            rows.append((values, i))
+            if len(rows) > 20000:
+                raise ValueError('单文件最多 20,000 笔，请拆分文件')
+        wb.close()
+    else:
+        raise ValueError('列映射仅支持 CSV 或 XLSX，PDF 仍使用已验证的标准表格规则')
+    headers = [str(v).strip() if v is not None and str(v).strip() else f'无标题列 {i+1}' for i,v in enumerate(headers)]
+    if not headers or len(set(headers)) != len(headers):
+        raise ValueError('文件没有标题，或存在重复标题；请核对第一行')
+    return headers, [(dict(zip(headers, values)), line, None) for values, line in rows]
+
+
+def mapped_date(value, format_name):
+    if value is None or value == '' or isinstance(value, (date, datetime)):
+        return iso(value, False)
+    formats = {'iso': ('%Y-%m-%d', r'\d{4}-\d{2}-\d{2}'),
+               'ymd_slash': ('%Y/%m/%d', r'\d{4}/\d{1,2}/\d{1,2}'),
+               'mdy': ('%m/%d/%Y', r'\d{1,2}/\d{1,2}/\d{4}'),
+               'dmy': ('%d/%m/%Y', r'\d{1,2}/\d{1,2}/\d{4}')}
+    if format_name not in formats:
+        raise ValueError('请选择明确的日期格式')
+    fmt, pattern = formats[format_name]
+    value = str(value).strip()
+    if not re.fullmatch(pattern, value):
+        raise ValueError('日期与所选格式不一致，且必须包含四位年份')
+    return datetime.strptime(value, fmt).date().isoformat()
+
+
+def apply_mapping(rows, headers, mapping):
+    columns = mapping.get('columns', {})
+    if not isinstance(columns, dict) or any(k not in HEADERS or (v and v not in headers) for k,v in columns.items()):
+        raise ValueError('映射引用的列不存在，请重新读取标题')
+    if any(not columns.get(k) for k in ('transaction_date','description','amount')):
+        raise ValueError('必须明确选择交易日期、原始描述和金额列')
+    mode = mapping.get('amount_mode', 'positive')
+    if mode not in ('positive','signed'):
+        raise ValueError('金额模式不合法')
+    for raw, line, page in rows:
+        try:
+            row = {key: raw.get(columns.get(key), '') for key in HEADERS}
+            for key in ('transaction_date','posting_date'):
+                row[key] = mapped_date(row[key], mapping.get('date_format','iso'))
+            amount = cents(row['amount'])
+            kind = text(row.get('type')) or mapping.get('type_default','unconfirmed')
+            if mode == 'signed':
+                if kind not in KINDS:
+                    kind = mapping.get('negative_type' if amount < 0 else 'positive_type', 'unconfirmed')
+                row['amount'] = str(Decimal(abs(amount))/100)
+            elif amount < 0:
+                raise ValueError('文件含负金额；请明确选择正负金额模式及类型含义，不会自行猜测')
+            if kind not in KINDS:
+                row['_type_review'] = text(row.get('type'))
+                row['type'] = 'unconfirmed'
+            else:
+                row['type'] = kind
+            yield row, line, page
+        except ValueError as error:
+            raise ValueError(f'第 {line} 行：{error}') from None
+
+
+def parse_file(data, ext, mapping=None, delimiter='auto'):
+    """Only explicit canonical columns; unknown PDF layouts fail closed."""
+    if ext in ('.csv','.xlsx'):
+        headers, rows = read_table(data, ext, delimiter)
+        if mapping is not None:
+            return list(apply_mapping(rows, headers, mapping))
+        canonical = [HEADER_ALIASES.get(h,h) for h in headers]
+        if len(set(canonical)) != len(canonical):
+            raise ValueError('相同字段出现多次，例如 post_date 与 posting_date 同时存在；请设置明确列映射')
+        if not {'transaction_date','description','amount','type'}.issubset(canonical):
+            raise MappingRequired(headers)
+        return [(dict(zip(canonical, raw.values())), line, page) for raw,line,page in rows]
     if ext == '.pdf':
         reader = PdfReader(io.BytesIO(data))
         if reader.is_encrypted:
@@ -189,14 +276,18 @@ def validate_category(db, row):
         raise ValueError('分类组合不存在；请先在分类管理中添加')
 
 
-def preview(db, data, ext, account):
-    rows = parse_file(data, ext)
+def preview(db, data, ext, account, mapping=None, delimiter='auto'):
+    rows = parse_file(data, ext, mapping, delimiter)
     if len(rows) > 20000:
         raise ValueError('单文件最多 20,000 笔，请拆分文件')
     result, counts = [], Counter()
     for raw, line, page in rows:
         try:
-            row = normalize(raw, account['currency'])
+            needs_type = raw.get('type') == 'unconfirmed' and mapping is not None
+            row = normalize({**raw, 'type':'expense'} if needs_type else raw, account['currency'])
+            if needs_type:
+                row['type'] = 'unconfirmed'
+                row['original_type'] = raw.get('_type_review','')
             validate_category(db, row)
             fp = fingerprint(row)
             counts[fp] += 1
@@ -247,7 +338,7 @@ def commit_import(db, rows, account, file_id, decisions):
             if field in decision:
                 row[field] = text(decision[field])
         if row['type'] not in KINDS:
-            raise ValueError('交易类型不合法')
+            raise ValueError(f"第 {row['line']} 行类型未确认；请选择收入、消费、转账等明确类型，或跳过此行")
         validate_category(db, row)
         target = decision.get('match_id') or row.get('match_id')
         if decision.get('match_id') and decision['match_id'] != row.get('match_id') and decision['match_id'] not in {c['id'] for c in row['candidates']}:
@@ -307,8 +398,12 @@ def get_transactions(db):
 def summarize(rows):
     totals = {k: 0 for k in KINDS}
     totals['pending'] = 0
+    totals['unconfirmed'] = 0
     categories, subcategories = defaultdict(int), defaultdict(lambda: defaultdict(int))
     for r in rows:
+        if r['type'] not in KINDS:
+            totals['unconfirmed'] += 1
+            continue
         if r['status'] == 'pending':
             totals['pending'] += r['amount']
             continue
